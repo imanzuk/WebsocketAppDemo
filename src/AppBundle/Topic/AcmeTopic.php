@@ -2,12 +2,13 @@
 
 namespace AppBundle\Topic;
 
+use Gos\Bundle\WebSocketBundle\Topic\PushableTopicInterface;
 use Gos\Bundle\WebSocketBundle\Topic\TopicInterface;
 use Ratchet\ConnectionInterface;
 use Ratchet\Wamp\Topic;
 use Gos\Bundle\WebSocketBundle\Router\WampRequest;
 
-class AcmeTopic implements TopicInterface
+class AcmeTopic implements TopicInterface, PushableTopicInterface
 {
     /**
      * This will receive any Subscription requests for this topic.
@@ -60,6 +61,17 @@ class AcmeTopic implements TopicInterface
         $topic->broadcast([
             'msg' => $event
         ]);
+    }
+
+    /**
+     * @param Topic        $topic
+     * @param WampRequest  $request
+     * @param array|string $data
+     * @param string       $provider The name of pusher who push the data
+     */
+    public function onPush(Topic $topic, WampRequest $request, $data, $provider)
+    {
+        $topic->broadcast(['msg' => $data]);
     }
 
     /**
